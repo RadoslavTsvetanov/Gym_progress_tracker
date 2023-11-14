@@ -13,3 +13,5 @@ Technologies and techniques used:
 -Stack -> React, Node and a bit of Nest for cleaning up and redoing the code later
 
 -Techniques -> microservices and a db_bridge between db and backend(if i change a db i will need to change the bridge code and not the actual backend logic) 
+
+-Docker -> containers so that my monster laptop and vs code dont die from running the microservices directly
