@@ -12,6 +12,7 @@ app.use(bodyParser.json());
 // Middleware to check if the request has a valid token
 const authenticateToken = (req, res, next) => {
   const token = req.headers["authorization"];
+  console.log(token);
 
   if (!token) return res.sendStatus(401);
 
