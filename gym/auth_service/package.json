@@ -2,9 +2,9 @@
   "name": "auth_service",
   "version": "1.0.0",
   "description": "",
-  "main": "auth.js",
+  "main": "index.js", 
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node auth.js" 
   },
   "author": "",
   "license": "ISC",
