@@ -10,10 +10,11 @@ generator client {
 }
 
 model User {
-  id            Int            @id @default(autoincrement())
-  username      String
-  email         String
-  notifications Notification[]
+  id                      Int            @id @default(autoincrement())
+  username                String         @unique
+  email                   String         @unique
+  notifications           Notification[]
+  get_email_notifications Boolean
 }
 
 model Notification {
