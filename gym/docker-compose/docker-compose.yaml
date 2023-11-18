@@ -9,16 +9,19 @@ services:
     ports:
       - "3306:3306"
 
-  express-server:
-    build: .
-    container_name: express-server-container
+  
+  notification_service:
+    build:
+      context: C:\Users\Hrisi\Desktop\Gym_progress_tracker\gym\notification_service
+      dockerfile: dockerfile
+    image: notification_service
     ports:
-      - "3008:3008"
-    depends_on:
-      - mysql
-    environment:
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_USER: root
-      DB_PASSWORD: my-secret-pw
-      DB_DATABASE: mydatabase
+    - "3008:3008"
+
+  auth_service:
+    build:
+      context: C:\Users\Hrisi\Desktop\Gym_progress_tracker\gym\auth_service
+      dockerfile: dockerfile
+    image: auth_service
+    ports:
+    - "3000:3000" 
