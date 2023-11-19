@@ -21,6 +21,7 @@ Technologies and techniques used
       Node > runtime enviroment
       Prisma > for handling complex queries and sql structure
       Nest > and a bit of for cleaning up and redoing the code later
+      Python > since i am developing on windows but the containers are run on linux(alpine) I ran into problems with prisma during the build of containers in docker-compose due to the exclusion of the docker ignore i made my own ali express docker compose in py 
 
     Techniques:
         Microservices: Adopted to improve scalability and manage different functionalities independently.
