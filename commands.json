@@ -1,0 +1,17 @@
+{
+    "commands": [
+        {
+            "name": "noti2",
+            "building": "docker build -t",
+            "run": "docker run -p 3008:3008",
+            "directory": "C:\\Users\\Hrisi\\Desktop\\Gym_progress_tracker\\gym\\notification_service"
+        },
+        {
+            "name": "exercises_service",
+            "building": "docker build -t",
+            "run": "docker run -p 3007:3007",
+            "directory": "C:\\Users\\Hrisi\\Desktop\\Gym_progress_tracker\\gym\\exercises_service"
+        }
+    ],
+    "docker_compose_directory": "C:\\Users\\Hrisi\\Desktop\\Gym_progress_tracker\\gym\\docker-compose"
+}

@@ -25,3 +25,20 @@ services:
     image: auth_service
     ports:
     - "3000:3000" 
+
+  gateway:
+    build:
+      context: C:\Users\Hrisi\Desktop\Gym_progress_tracker\gym\gateway
+      dockerfile: dockerfile
+    image: gateway
+    ports:
+    - "3002:3002"
+
+
+  exercises_service:
+    build:
+      context: C:\Users\Hrisi\Desktop\Gym_progress_tracker\gym\exercises_service
+      dockerfile: dockerfile
+    image: exercises_service
+    ports:
+    - "3007:3007"

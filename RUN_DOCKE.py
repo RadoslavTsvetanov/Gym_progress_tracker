@@ -1,5 +1,7 @@
 import subprocess
-from concurrent.futures import ThreadPoolExecutor
+import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
 
 
 class CommandFactory:
@@ -11,6 +13,14 @@ class CommandFactory:
             'build': f"{building} {name} .",
             'run': f"{run} {name}"
         }
+
+
+def docker_compose(directory):
+    try:
+        subprocess.Popen(
+            f"cd /d {directory} && docker-compose up", shell=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Docker Compose failed with error: {e}")
 
 
 def build_container(command_to_run, directory_path):
@@ -31,26 +41,40 @@ def run_container(command_to_build, command_to_run, directory):
 
 def execute_commands(commands):
     with ThreadPoolExecutor(max_workers=len(commands)) as executor:
-        futures = {executor.submit(
-            run_container, command['build'], command['run'], command['directory']): command for command in commands}
-        for future in futures:
+        futures = [executor.submit(run_container, command['build'],
+                                   command['run'], command['directory']) for command in commands]
+        for future in as_completed(futures):
             try:
                 future.result()
             except Exception as e:
                 print(f"Command execution failed: {e}")
 
 
+def start_docker_compose(docker_compose_directory):
+    docker_compose(docker_compose_directory)
+
+
 def main():
+    with open('commands.json', 'r') as file:
+        data = json.load(file)
+
+    commands_data = data.get('commands', [])
+    docker_compose_directory = data.get('docker_compose_directory', '')
+
     command_factory = CommandFactory()
     commands = [
         command_factory.create_command(
-            "noti2", "docker build -t", "docker run -p 3008:3008", r"C:\Users\Hrisi\Desktop\Gym_progress_tracker\gym\notification_service"),
-        command_factory.create_command(
-            "exercises_service", "docker build -t", "docker run -p 3007:3007", r"C:\Users\Hrisi\Desktop\Gym_progress_tracker\gym\exercises_service")
-        # Add more commands here as needed
+            cmd['name'], cmd['building'], cmd['run'], cmd['directory']
+        ) for cmd in commands_data
     ]
 
+    docker_thread = threading.Thread(
+        target=start_docker_compose, args=(docker_compose_directory,))
+    docker_thread.start()
+
     execute_commands(commands)
+
+    docker_thread.join()
 
 
 if __name__ == "__main__":
