@@ -27,3 +27,16 @@ Technologies and techniques used
         Microservices: Adopted to improve scalability and manage different functionalities independently.
         Database Bridge: Implemented to connect between databases and the backend; allows easier migration by modifying the bridge code rather than the backend logic.
 
+---
+
+#HOW TO START
+
+##with docker
+RUN the RUN_DOCKER.pu but replace the paths in the <mark>***commands.json***</mark>
+
+
+
+##without docker   
+> RUN npm install for each service
+> > RUN npx prisma db push or prisma migrate where prisma is used
+> > > RUN npm start for each service
