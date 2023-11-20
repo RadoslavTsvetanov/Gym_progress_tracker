@@ -1,5 +1,27 @@
-FROM node:alpine 
-COPY ./ ./
+# Use a Node.js base image
+FROM node:latest
+
+# Create and set the working directory in the container
+WORKDIR /app
+
+# Copy the package.json and package-lock.json files to the working directory
+COPY package.json package-lock.json ./
+
+# Install dependencies
 RUN npm install
+
+# Install Prisma globally
+RUN npm install -g prisma
+
+# Copy the Prisma schema and other necessary files to the container
+COPY ./prisma ./prisma
+COPY . .
+
+# Expose port 3007 (or any other desired port for your backend)
 EXPOSE 3007
+
+# Run Prisma migrate to apply migrations (adjust as needed based on your setup)
+RUN npx prisma migrate deploy --preview-feature
+
+# Start the backend server
 CMD ["npm", "start"]

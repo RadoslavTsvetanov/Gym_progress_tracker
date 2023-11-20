@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 class DB {
   async create_user_exercises(workouts, username) {
     try {
-            const user = await prisma.user.findUnique({
+      const user = await prisma.user.findUnique({
         where: {
           username: username,
         },
@@ -15,7 +15,7 @@ class DB {
         throw new Error(`User with username ${username} not found`);
       }
 
-            const createdExercises = [];
+      const createdExercises = [];
       for (const workout of workouts) {
         const createdExercise = await prisma.exercise_model.create({
           data: {
@@ -35,11 +35,12 @@ class DB {
       return createdExercises;
     } catch (error) {
       console.error("Error creating exercises:", error);
-      throw error;     }
+      throw error;
+    }
   }
   async get_user_exercises(username) {
     try {
-            const userWithExercises = await prisma.user.findUnique({
+      const userWithExercises = await prisma.user.findUnique({
         where: {
           username: username,
         },
@@ -59,12 +60,13 @@ class DB {
       return userWithExercises.exercises;
     } catch (error) {
       console.error("Error fetching user exercises:", error);
-      throw error;     }
+      throw error;
+    }
   }
 
   async get_user_growth(username) {
     try {
-            const userWithGrowth = await prisma.user.findUnique({
+      const userWithGrowth = await prisma.user.findUnique({
         where: {
           username: username,
         },
@@ -81,12 +83,13 @@ class DB {
       return userWithGrowth.growth;
     } catch (error) {
       console.error("Error fetching user growth data:", error);
-      throw error;     }
+      throw error;
+    }
   }
 
   async add_user_workout(workout, username) {
     try {
-            const user = await prisma.user.findUnique({
+      const user = await prisma.user.findUnique({
         where: {
           username: username,
         },
@@ -96,9 +99,10 @@ class DB {
         throw new Error(`User with username ${username} not found`);
       }
 
-            const newWorkout = await prisma.workout.create({
+      const newWorkout = await prisma.workout.create({
         data: {
-          exercises: [],           user: {
+          exercises: [],
+          user: {
             connect: {
               id: user.id,
             },
@@ -110,21 +114,22 @@ class DB {
       return newWorkout;
     } catch (error) {
       console.error("Error adding workout:", error);
-      throw error;     }
+      throw error;
+    }
   }
 
-  async create_user(username) {
+  async create_user(username, big_object) {
+    const { exercises_list, progress_list } = big_object;
     try {
       const newUser = await prisma.user.create({
         data: {
           username: username,
-          exercises: [],
-          progress: [],
-          growth: [],
+          exercises: exercises_list,
+          progress: progress_list,
         },
       });
-
       console.log("New user created:", newUser);
+      return newUser;
     } catch (error) {
       console.error("Error creating user:", error);
     }
