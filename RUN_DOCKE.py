@@ -10,7 +10,7 @@ class CommandFactory:
         return {
             'directory': directory,
             'name': name,
-            'build': f"{building} {name} .",
+            'build': f"{building} {name}",
             'run': f"{run} {name}"
         }
 

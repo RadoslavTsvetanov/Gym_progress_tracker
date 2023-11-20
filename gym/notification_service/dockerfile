@@ -1,15 +1,21 @@
-FROM node:alpine
+FROM node:latest
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
 RUN npm install
 
-COPY . .
+RUN npm install -g prisma
+
+COPY ./prisma ./prisma
+
+RUN npx prisma migrate deploy
 
 RUN npx prisma generate
 
-EXPOSE 3008
+COPY . .
+
+EXPOSE 3000
 
 CMD ["npm", "start"]

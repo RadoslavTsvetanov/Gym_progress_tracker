@@ -14,6 +14,7 @@ app.get("/notifications/:username", async (req, res) => {
     const notifications = await db.get_all_notifications_by_username(username);
     res.json({ notifications });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Error retrieving notifications" });
   }
 });

@@ -1,5 +1,8 @@
 {
     "commands": [
+    ],
+    "docker_compose_directory": "C:\\Users\\Hrisi\\Desktop\\Gym_progress_tracker\\gym\\docker-compose",
+    "save_for_later":[
         {
             "name": "noti2",
             "building": "docker build -t",
@@ -11,7 +14,13 @@
             "building": "docker build -t",
             "run": "docker run -p 3007:3007",
             "directory": "C:\\Users\\Hrisi\\Desktop\\Gym_progress_tracker\\gym\\exercises_service"
+        },
+
+        {
+            "directory":"",
+            "name":"",
+            "building":"docker pull mysql:latest",
+            "run":"docker run -d -p 3306:3306 --name mysql-container -e MYSQL_ROOT_PASSWORD=your_password -e MYSQL_DATABASE=notifications mysql:latest"
         }
-    ],
-    "docker_compose_directory": "C:\\Users\\Hrisi\\Desktop\\Gym_progress_tracker\\gym\\docker-compose"
+    ]
 }

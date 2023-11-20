@@ -1,15 +1,6 @@
 version: '24.0.6'
 
 services:
-  mysql:
-    image: mysql:latest
-    container_name: mysql-container
-    environment:
-      MYSQL_ROOT_PASSWORD: my-secret-pw
-    ports:
-      - "3306:3306"
-
-  
   notification_service:
     build:
       context: C:\Users\Hrisi\Desktop\Gym_progress_tracker\gym\notification_service
