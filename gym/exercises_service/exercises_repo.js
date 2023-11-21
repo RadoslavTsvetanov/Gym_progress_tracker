@@ -89,49 +89,62 @@ class DB {
 
   async add_user_workout(workout, username) {
     try {
-      const user = await prisma.user.findUnique({
-        where: {
-          username: username,
-        },
-      });
-
-      if (!user) {
-        throw new Error(`User with username ${username} not found`);
-      }
-
-      const newWorkout = await prisma.workout.create({
-        data: {
-          exercises: [],
-          user: {
-            connect: {
-              id: user.id,
-            },
-          },
-        },
-      });
-
-      console.log(`Workout added for user ${username}:`, newWorkout);
-      return newWorkout;
     } catch (error) {
       console.error("Error adding workout:", error);
       throw error;
     }
   }
 
-  async create_user(username, big_object) {
-    const { exercises_list, progress_list } = big_object;
+  async create_user(username, programJSON) {
     try {
       const newUser = await prisma.user.create({
         data: {
-          username: username,
-          exercises: exercises_list,
-          progress: progress_list,
+          username,
+          program: {
+            create: {
+              title: programJSON.title,
+              workouts: {
+                create: programJSON.workouts.map((workout) => ({
+                  type: workout.type,
+                  exercises: {
+                    create: workout.exercises.map((exercise) => ({
+                      name: exercise.name,
+                      reps: exercise.reps,
+                      sets: exercise.sets,
+                    })),
+                  },
+                })),
+              },
+            },
+          },
+          progress: {
+            create: {
+              workouts: [], // Progress can be added separately as needed
+            },
+          },
+        },
+        include: {
+          program: {
+            include: {
+              workouts: {
+                include: {
+                  exercises: true,
+                },
+              },
+            },
+          },
+          progress: true,
         },
       });
-      console.log("New user created:", newUser);
+
+      console.log(
+        "New user created with custom program and progress:",
+        newUser
+      );
       return newUser;
     } catch (error) {
       console.error("Error creating user:", error);
+      throw error;
     }
   }
 }

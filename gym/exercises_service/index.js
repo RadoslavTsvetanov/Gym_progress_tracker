@@ -58,10 +58,10 @@ app.get("/get_progression", async (req, res) => {
 });
 
 app.post("/create_user", async (req, res) => {
-  const { username, big_object } = req.body;
+  const { username, program } = req.body;
 
   try {
-    const newUser = db.create_user(username, big_object);
+    const newUser = db.create_user(username, program);
     return res
       .status(201)
       .json({ message: "User created successfully", user: newUser });
