@@ -35,32 +35,81 @@ class DB {
 
   async get_user_growth(username) {
     try {
-      const userWithGrowth = await prisma.user.findUnique({
+      const user = await prisma.user.findUnique({
         where: {
           username: username,
         },
         include: {
-          growth: true,
+          progress: true,
         },
       });
 
-      if (!userWithGrowth) {
-        throw new Error(`User with username ${username} not found`);
+      if (!user) {
+        throw new Error("User not found");
       }
 
-      console.log(`Growth data for user ${username}:`, userWithGrowth.growth);
-      return userWithGrowth.growth;
+      const userProgress = user.progress;
+
+      if (!userProgress) {
+        throw new Error("User progress not found");
+      }
+
+      let updatedWorkouts = [];
+
+      if (Array.isArray(userProgress.workouts)) {
+        updatedWorkouts = [...userProgress.workouts, workoutDetails];
+      } else {
+        updatedWorkouts = [workoutDetails];
+      }
+      const updatedProgress = await prisma.progress.update({
+        where: {
+          id: userProgress.id,
+        },
+        data: {
+          workouts: updatedWorkouts,
+        },
+      });
+
+      return updatedProgress;
     } catch (error) {
-      console.error("Error fetching user growth data:", error);
-      throw error;
+      throw new Error(`Error adding workout to progress: ${error.message}`);
     }
   }
 
   async add_user_workout(workout, username) {
     try {
+      const user = await prisma.user.findUnique({
+        where: {
+          username: username,
+        },
+        include: {
+          progress: true,
+        },
+      });
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      const userProgress = user.progress;
+      console.dir(userProgress[0].workouts); // dont know why its like that but probably cuz i have not made the progress a detached table but just an array
+      console.log("-------------------------------");
+
+      const new_progress = [...userProgress[0].workouts, workout];
+      console.dir(new_progress);
+      // // Update the workouts field in the Progress model
+      const updatedProgress = await prisma.progress.update({
+        where: {
+          id: userProgress[0].id,
+        },
+        data: {
+          workouts: new_progress,
+        },
+      });
+
+      return updatedProgress;
     } catch (error) {
-      console.error("Error adding workout:", error);
-      throw error;
+      throw new Error(`Error adding workout to progress: ${error.message}`);
     }
   }
 

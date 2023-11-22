@@ -43,6 +43,7 @@ app.post("/add_new_workout", async (req, res) => {
     const newWorkout = await db.add_user_workout(workout, username);
     res.json({ success: "Workout added successfully", newWorkout });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Error adding workout" });
   }
 });
