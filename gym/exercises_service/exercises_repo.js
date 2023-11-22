@@ -44,35 +44,11 @@ class DB {
         },
       });
 
-      if (!user) {
-        throw new Error("User not found");
-      }
+      console.dir(user);
 
-      const userProgress = user.progress;
-
-      if (!userProgress) {
-        throw new Error("User progress not found");
-      }
-
-      let updatedWorkouts = [];
-
-      if (Array.isArray(userProgress.workouts)) {
-        updatedWorkouts = [...userProgress.workouts, workoutDetails];
-      } else {
-        updatedWorkouts = [workoutDetails];
-      }
-      const updatedProgress = await prisma.progress.update({
-        where: {
-          id: userProgress.id,
-        },
-        data: {
-          workouts: updatedWorkouts,
-        },
-      });
-
-      return updatedProgress;
+      return user.progress;
     } catch (error) {
-      throw new Error(`Error adding workout to progress: ${error.message}`);
+      console.error(error);
     }
   }
 
