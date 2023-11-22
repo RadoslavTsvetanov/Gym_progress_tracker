@@ -41,3 +41,13 @@ RUN the RUN_DOCKER.pu but replace the paths in the <mark>**_commands.json_**</ma
 > > RUN npx prisma db push or prisma migrate where prisma is used
 > >
 > > > RUN npm start for each service
+
+
+
+#Motivation for the project
+    
+    Working in "huge" (for me) codebases
+    Getting experience with complex sql rellationships and ORMs for safety ( a big weakness for me since I have always worked with NoSQL)
+    Learning basic docker concepts 
+    Learning to deploy an app
+    Tracking my workouts
