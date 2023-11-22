@@ -1,47 +1,56 @@
 const express = require("express");
-const axios = require("axios");
-const bodyParser = require("body-parser");
+const jwt = require("jsonwebtoken");
+const fs = require("fs");
+const { createProxyMiddleware } = require("http-proxy-middleware");
 
 const app = express();
-const PORT = 3002;
-const AUTH_SERVICE_URL = "http://localhost:3000";
-const EXAMPLE_SERVICE_URL = "http://localhost:3001";
+const PORT = 3000;
 
-app.use(bodyParser.json());
+const microservices = JSON.parse(fs.readFileSync("microservices.json", "utf8"));
 
-// Route to authenticate and get a token
-app.post("/login", async (req, res) => {
-  try {
-    const authResponse = await axios.post(
-      `${AUTH_SERVICE_URL}/login`,
-      req.body
+const validateToken = (req, res, next) => {
+    const token = req.headers.authorization;
+
+    if (req.path.startsWith("/auth")) {
+    return next();
+  }
+
+    if (!token) {
+    return res.status(401).json({ error: "Unauthorized: Token not provided" });
+  }
+
+    jwt.verify(token, "your-secret-key", (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: "Unauthorized: Invalid token" });
+    }
+    req.user = decoded;
+    next();
+  });
+};
+
+app.use(validateToken);
+
+for (const serviceName in microservices) {
+  const serviceConfig = microservices[serviceName];
+  const baseURL = serviceConfig.baseURL;
+  const routes = serviceConfig.routes;
+
+  for (const routeName in routes) {
+    const routePath = routes[routeName];
+    const fullRoutePath = `/${serviceName}${routePath}`;
+
+        app.use(
+      fullRoutePath,
+      createProxyMiddleware({
+        target: baseURL,
+        changeOrigin: true,
+        pathRewrite: {
+          [`^${fullRoutePath}`]: "",         },
+      })
     );
-    const token = authResponse.data.token;
-
-    res.json({ token });
-  } catch (error) {
-    res.status(401).json({ error: "Authentication failed" });
   }
-});
-
-// Route to access the protected resource
-app.get("/resource", async (req, res) => {
-  const token = req.headers["authorization"];
-
-  if (!token) return res.sendStatus(401);
-
-  try {
-    // Forward the request to the example service
-    const exampleResponse = await axios.get(`${EXAMPLE_SERVICE_URL}/resource`, {
-      headers: { Authorization: token },
-    });
-
-    res.json(exampleResponse.data);
-  } catch (error) {
-    res.status(403).json({ error: "Authorization failed" });
-  }
-});
+}
 
 app.listen(PORT, () => {
-  console.log(`Gateway running on port ${PORT}`);
+  console.log(`API Gateway listening on port ${PORT}`);
 });
