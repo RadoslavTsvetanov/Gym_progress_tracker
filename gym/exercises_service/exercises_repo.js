@@ -3,41 +3,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 class DB {
-  async create_user_exercises(workouts, username) {
-    try {
-      const user = await prisma.user.findUnique({
-        where: {
-          username: username,
-        },
-      });
-
-      if (!user) {
-        throw new Error(`User with username ${username} not found`);
-      }
-
-      const createdExercises = [];
-      for (const workout of workouts) {
-        const createdExercise = await prisma.exercise_model.create({
-          data: {
-            name: workout.name,
-            sets: workout.sets,
-            user: {
-              connect: {
-                id: user.id,
-              },
-            },
-          },
-        });
-        createdExercises.push(createdExercise);
-      }
-
-      console.log(`Exercises created for user ${username}:`, createdExercises);
-      return createdExercises;
-    } catch (error) {
-      console.error("Error creating exercises:", error);
-      throw error;
-    }
-  }
+  async create_user_exercises(workouts, username) {}
   async get_user_exercises(username) {
     try {
       const userWithExercises = await prisma.user.findUnique({
@@ -45,19 +11,22 @@ class DB {
           username: username,
         },
         include: {
-          exercises: true,
+          program: {
+            include: {
+              workouts: {
+                include: {
+                  exercises: true,
+                },
+              },
+            },
+          },
         },
       });
 
       if (!userWithExercises) {
         throw new Error(`User with username ${username} not found`);
       }
-
-      console.log(
-        `Exercises for user ${username}:`,
-        userWithExercises.exercises
-      );
-      return userWithExercises.exercises;
+      return userWithExercises;
     } catch (error) {
       console.error("Error fetching user exercises:", error);
       throw error;

@@ -27,7 +27,7 @@ app.post("/create_exercises", async (req, res) => {
   }
 });
 
-app.get("/get_exercises", async (req, res) => {
+app.get("/get_program", async (req, res) => {
   const username = req.query.username;
   try {
     const exercises = await db.get_user_exercises(username);
