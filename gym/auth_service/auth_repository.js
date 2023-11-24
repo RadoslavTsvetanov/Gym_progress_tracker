@@ -18,7 +18,7 @@ class DB {
 
   async check_for_user(username, password) {
     try {
-      const user = await User.findOne({ username, password }).exec();
+      const user = await User.findOne({ username, password });
 
       return !!user; // Return true if the user is found, otherwise false
     } catch (error) {
@@ -29,8 +29,9 @@ class DB {
 
   async create_user(username, password) {
     try {
-      const existingUser = await User.findOne({ username }).exec();
-
+      console.log(username, password);
+      const existingUser = await User.findOne({ username });
+      console.log(existingUser);
       if (existingUser) {
         return { success: false, message: "Username already exists" };
       }

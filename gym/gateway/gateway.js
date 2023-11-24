@@ -1,34 +1,37 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
-const { createProxyMiddleware } = require("http-proxy-middleware");
+const axios = require("axios");
 
 const app = express();
-const PORT = 3000;
+const PORT = 3009;
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
 
 const microservices = JSON.parse(fs.readFileSync("microservices.json", "utf8"));
 
-const validateToken = (req, res, next) => {
-    const token = req.headers.authorization;
+// const validateToken = (req, res, next) => {
+//   const token = req.headers.authorization;
 
-    if (req.path.startsWith("/auth")) {
-    return next();
-  }
+//   if (req.path.startsWith("/auth")) {
+//     return next();
+//   }
 
-    if (!token) {
-    return res.status(401).json({ error: "Unauthorized: Token not provided" });
-  }
+//   if (!token) {
+//     return res.status(401).json({ error: "Unauthorized: Token not provided" });
+//   }
 
-    jwt.verify(token, "your-secret-key", (err, decoded) => {
-    if (err) {
-      return res.status(401).json({ error: "Unauthorized: Invalid token" });
-    }
-    req.user = decoded;
-    next();
-  });
-};
+//   jwt.verify(token, "your-secret-key", (err, decoded) => {
+//     if (err) {
+//       return res.status(401).json({ error: "Unauthorized: Invalid token" });
+//     }
+//     req.user = decoded;
+//     next();
+//   });
+// };
 
-app.use(validateToken);
+// app.use(validateToken);
 
 for (const serviceName in microservices) {
   const serviceConfig = microservices[serviceName];
@@ -37,17 +40,34 @@ for (const serviceName in microservices) {
 
   for (const routeName in routes) {
     const routePath = routes[routeName];
-    const fullRoutePath = `/${serviceName}${routePath}`;
+    const fullRoutePath = `${routePath}`;
+    console.log(fullRoutePath);
+    console.log("------------");
+    app.post(fullRoutePath, async (req, res) => {
+      console.log("gate");
+      console.log(req.body); // it does not recieve body
+      console.log("gate");
+      try {
+        const requestData = {
+          method: serviceConfig.methods[routeName],
+          url: `${baseURL}${routes[routeName]}`,
+          headers: {
+            Authorization: req.headers.authorization,
+          },
+          data: req.body,
+        };
 
-        app.use(
-      fullRoutePath,
-      createProxyMiddleware({
-        target: baseURL,
-        changeOrigin: true,
-        pathRewrite: {
-          [`^${fullRoutePath}`]: "",         },
-      })
-    );
+        const response = await axios(requestData);
+        res.status(response.status).json(response.data);
+      } catch (error) {
+        if (error.response) {
+          res.status(error.response.status).json(error.response.data);
+        } else {
+          console.error(error);
+          res.status(500).json({ error: "Internal server error" });
+        }
+      }
+    });
   }
 }
 

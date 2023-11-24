@@ -9,7 +9,7 @@ const { DB } = db_repo;
 const db = new DB();
 app.use(bodyParser.json());
 
-app.post("/login", async (req, res) => {
+app.post("/auth/login", async (req, res) => {
   const { username, password } = req.body;
 
   try {
@@ -26,9 +26,12 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.post("/signup", async (req, res) => {
+app.post("/auth/signup", async (req, res) => {
   const { username, password } = req.body;
-
+  console.log("auth");
+  console.log(req.body)
+  console.log(username, password);
+  console.log("auth");
   try {
     const createUserResult = await db.create_user(username, password);
 
