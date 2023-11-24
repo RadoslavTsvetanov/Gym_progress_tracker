@@ -57,18 +57,17 @@ app.get("/get_progression", async (req, res) => {
     res.status(500).json({ error: "Error fetching progression" });
   }
 });
-
 app.post("/create_user", async (req, res) => {
   const { username, program } = req.body;
 
   try {
-    const newUser = db.create_user(username, program);
+    const newUser = await db.create_user(username, program);
     return res
       .status(201)
       .json({ message: "User created successfully", user: newUser });
   } catch (error) {
     console.error("Error creating user:", error);
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error });
   }
 });
 
