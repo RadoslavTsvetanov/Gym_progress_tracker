@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
   res.json();
 });
 
-app.post("/create_exercises", async (req, res) => {
+app.post("/exercises/create_exercises", async (req, res) => {
   const { username, workouts } = req.body;
   try {
     const createdExercises = await db.create_user_exercises(workouts, username);
@@ -27,7 +27,7 @@ app.post("/create_exercises", async (req, res) => {
   }
 });
 
-app.get("/get_program", async (req, res) => {
+app.get("/exercises/get_program", async (req, res) => {
   const username = req.query.username;
   try {
     const exercises = await db.get_user_exercises(username);
@@ -37,7 +37,7 @@ app.get("/get_program", async (req, res) => {
   }
 });
 
-app.post("/add_new_workout", async (req, res) => {
+app.post("/exercises/add_new_workout", async (req, res) => {
   const { username, workout } = req.body;
   try {
     const newWorkout = await db.add_user_workout(workout, username);
@@ -48,7 +48,7 @@ app.post("/add_new_workout", async (req, res) => {
   }
 });
 
-app.get("/get_progression", async (req, res) => {
+app.get("/exercises/get_progression", async (req, res) => {
   const { username } = req.query;
   try {
     const progression = await db.get_user_growth(username);
@@ -57,7 +57,7 @@ app.get("/get_progression", async (req, res) => {
     res.status(500).json({ error: "Error fetching progression" });
   }
 });
-app.post("/create_user", async (req, res) => {
+app.post("/exercises/create_user", async (req, res) => {
   const { username, program } = req.body;
 
   try {
