@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const db_name = "GYM";
+
 const uri = `mongodb+srv://KURO:KURO@task-manager.8d8g6sk.mongodb.net/${db_name}?retryWrites=true&w=majority`;
 mongoose.connect(uri, {
   useNewUrlParser: true,
