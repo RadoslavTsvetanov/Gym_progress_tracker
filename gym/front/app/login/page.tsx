@@ -1,13 +1,14 @@
 "use client"
-
-
 import React from 'react';
-import { useMutation } from 'react-query';
-import {gateway_url}from "../constant_variables/constants"
+import { gateway_url } from '../constant_variables/constants';
+
+interface LoginResponse {
+  token: string;
+}
+
 const Login: React.FC = () => {
-  const loginUser = async (data: { username: string; password: string }) => {
-    // Replace 'apiEndpoint' with your actual backend endpoint for login
-    const response = await fetch(`${gateway_url}/login`, {
+  const loginUser = async (data: { username: string; password: string }): Promise<LoginResponse> => {
+    const response = await fetch(`${gateway_url}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -22,8 +23,6 @@ const Login: React.FC = () => {
     return response.json();
   };
 
-  const mutation = useMutation(loginUser);
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -31,10 +30,14 @@ const Login: React.FC = () => {
     const password = formData.get('password') as string;
 
     try {
-      await mutation.mutateAsync({ username, password });
+      const { token } = await loginUser({ username, password });
+
+      // Storing token in an HTTP-only cookie
+      document.cookie = `accessToken=${token}; path=/; HttpOnly; Secure`; // Modify as needed
+
       // If login successful, you can redirect the user
       // For example:
-      window.location.href = '/dashboard'; // Redirect to dashboard on success
+      window.location.href = '/'; // Redirect to dashboard on success
     } catch (error) {
       console.error(error);
       // Handle incorrect username or password error here
@@ -44,7 +47,6 @@ const Login: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded shadow-md max-w-md w-full">
-          <div>{ gateway_url}</div>
         <h2 className="text-2xl font-semibold mb-4 text-gray-800">Log In</h2>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
@@ -55,7 +57,7 @@ const Login: React.FC = () => {
               type="text"
               id="username"
               name="username"
-              className="w-full border-gray-300 rounded-md px-4 py-2 mt-1 focus:outline-none focus:border-blue-500"
+              className="w-full border-gray-300 rounded-md px-4 py-2 mt-1 focus:outline-none focus:border-blue-500 text-gray-800"
               placeholder="Enter your username"
             />
           </div>
@@ -67,7 +69,7 @@ const Login: React.FC = () => {
               type="password"
               id="password"
               name="password"
-              className="w-full border-gray-300 rounded-md px-4 py-2 mt-1 focus:outline-none focus:border-blue-500"
+              className="w-full border-gray-300 rounded-md px-4 py-2 mt-1 focus:outline-none focus:border-blue-500 text-gray-800"
               placeholder="Enter your password"
             />
           </div>
