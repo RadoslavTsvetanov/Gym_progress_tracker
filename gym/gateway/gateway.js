@@ -2,11 +2,12 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const axios = require("axios");
-
+const cors = require("cors");
 const app = express();
 const PORT = 3009;
 
 const bodyParser = require("body-parser");
+app.use(cors());
 app.use(bodyParser.json());
 
 const microservices = JSON.parse(fs.readFileSync("microservices.json", "utf8"));
