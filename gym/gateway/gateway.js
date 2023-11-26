@@ -11,27 +11,27 @@ app.use(bodyParser.json());
 
 const microservices = JSON.parse(fs.readFileSync("microservices.json", "utf8"));
 
-// const validateToken = (req, res, next) => {
-//   const token = req.headers.authorization;
+const validateToken = (req, res, next) => {
+  const token = req.headers.authorization;
 
-//   if (req.path.startsWith("/auth")) {
-//     return next();
-//   }
+  if (req.path.startsWith("/auth")) {
+    return next();
+  }
 
-//   if (!token) {
-//     return res.status(401).json({ error: "Unauthorized: Token not provided" });
-//   }
+  if (!token) {
+    return res.status(401).json({ error: "Unauthorized: Token not provided" });
+  }
 
-//   jwt.verify(token, "your-secret-key", (err, decoded) => {
-//     if (err) {
-//       return res.status(401).json({ error: "Unauthorized: Invalid token" });
-//     }
-//     req.user = decoded;
-//     next();
-//   });
-// };
+  jwt.verify(token, "your_secret_key", (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: "Unauthorized: Invalid token" });
+    }
+    req.user = decoded;
+    next();
+  });
+};
 
-// app.use(validateToken);
+app.use(validateToken);
 
 for (const serviceName in microservices) {
   const serviceConfig = microservices[serviceName];
