@@ -1,7 +1,8 @@
 import React from 'react';
+import axios from 'axios';
 import { gateway_url } from './constant_variables/constants';
 import { CookieHandler } from '~/utils/cookie_handler';
-import 
+import Cookies from 'js-cookie';
 interface LoginResponse {
   token: string;
 }
@@ -10,20 +11,16 @@ const Login: React.FC = () => {
   const cookie_handler = new CookieHandler();
 
   const loginUser = async (data: { username: string; password: string }): Promise<LoginResponse> => {
-    let response = await fetch(`${gateway_url}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
+    try {
+      const response = await axios.post(`${gateway_url}/auth/login`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      return response.data;
+    } catch (error) {
       throw new Error('Incorrect username or password');
     }
-    response = await JSON.parse(response)
-    console.dir(response.body)
-    return response.json();
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -34,16 +31,15 @@ const Login: React.FC = () => {
 
     try {
       const { token } = await loginUser({ username, password });
-
-      // Storing token in an HTTP-only cookie
-      cookie_handler.setCookie('accessToken', token, {
-        expires: 7, // Expires in 7 days
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        path: '/', // Modify the path as needed
-      });
-
+      console.log(token)
+      // cookie_handler.setCookie('accessToken', token, {
+      //   expires: 7, // Expires in 7 days
+      //   httpOnly: true,
+      //   secure: true,
+      // });
+      Cookies.set("user", JSON.stringify({username:username,token:token}), {
+        expires: 7,
+      })
       // If login successful, you can redirect the user
       window.location.href = '/'; // Redirect to dashboard on success
     } catch (error) {
