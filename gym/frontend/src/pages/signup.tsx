@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { gateway_url,application_url } from '../constant_variables/constants';
+import { gateway_url,application_url } from './constant_variables/constants';
 const Signup = () => {
 
   const router = useRouter()
@@ -32,7 +32,7 @@ const Signup = () => {
       setIsLoading(false);
       // Redirect to a new route after successful signup
       router.replace(`${application_url}/login`)
-    } catch (error: any) {
+    } catch (error: unknown) {
       setError('Signup error: ' + error.message);
       console.error('Signup error:', error);
       setIsLoading(false);

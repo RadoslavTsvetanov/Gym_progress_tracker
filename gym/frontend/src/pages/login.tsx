@@ -1,14 +1,16 @@
-"use client"
 import React from 'react';
-import { gateway_url } from '../constant_variables/constants';
-
+import { gateway_url } from './constant_variables/constants';
+import { CookieHandler } from '~/utils/cookie_handler';
+import 
 interface LoginResponse {
   token: string;
 }
 
 const Login: React.FC = () => {
+  const cookie_handler = new CookieHandler();
+
   const loginUser = async (data: { username: string; password: string }): Promise<LoginResponse> => {
-    const response = await fetch(`${gateway_url}/auth/login`, {
+    let response = await fetch(`${gateway_url}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -19,7 +21,8 @@ const Login: React.FC = () => {
     if (!response.ok) {
       throw new Error('Incorrect username or password');
     }
-
+    response = await JSON.parse(response)
+    console.dir(response.body)
     return response.json();
   };
 
@@ -33,10 +36,15 @@ const Login: React.FC = () => {
       const { token } = await loginUser({ username, password });
 
       // Storing token in an HTTP-only cookie
-      document.cookie = `accessToken=${token}; path=/; HttpOnly; Secure`; // Modify as needed
+      cookie_handler.setCookie('accessToken', token, {
+        expires: 7, // Expires in 7 days
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        path: '/', // Modify the path as needed
+      });
 
       // If login successful, you can redirect the user
-      // For example:
       window.location.href = '/'; // Redirect to dashboard on success
     } catch (error) {
       console.error(error);
