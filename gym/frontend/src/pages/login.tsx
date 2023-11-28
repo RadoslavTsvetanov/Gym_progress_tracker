@@ -3,6 +3,7 @@ import axios from 'axios';
 import { gateway_url } from './constant_variables/constants';
 import { CookieHandler } from '~/utils/cookie_handler';
 import Cookies from 'js-cookie';
+import {User} from "~/utils/types"
 interface LoginResponse {
   token: string;
 }

@@ -1,19 +1,45 @@
 import { z } from "zod";
-
+import axios from "axios"
+import {gateway_url} from "~/pages/constant_variables/constants"
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+enum REQUEST_TYPE{
+  POST = 'POST',
+  GET = 'GET'
+}
+async function axios_request(url:string, req_data:object, method:REQUEST_TYPE, headers:object) {
+  try {
+    const response = await axios({
+      method: method,
+      url: url,
+      data: req_data,
+      headers: headers,
+    });
 
+    return response;
+  } catch (error) {
+    console.error('Request error:', error);
+    throw error; 
+  }
+}
 let post = {
   id: 1,
   name: "Hello World",
 };
 
 export const postRouter = createTRPCRouter({
-  hello: publicProcedure
+  get_requests: publicProcedure
     .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
+    .query(async ({ input }) => {
+      try {
+        const response = await axios_request(`${gateway_url}/exercises/`,{},REQUEST_TYPE.GET,{});
+        const { data } = response;
+        
+        return {
+          greeting: data 
+        };
+      } catch (error) {
+        console.log(error);
+      }
     }),
 
   create: publicProcedure

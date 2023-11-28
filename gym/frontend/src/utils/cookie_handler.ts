@@ -12,7 +12,7 @@ export class CookieHandler {
   getCookie(key: string): Cookie | undefined {
     const cookieString:string | undefined= Cookies.get(key);
     if (cookieString) {
-      const cookie = JSON.parse(cookieString);
+      const cookie: Cookie = JSON.parse(cookieString);
       return cookie;
     }
     return undefined;
@@ -24,5 +24,13 @@ export class CookieHandler {
 
     redactCookie(key: string, value: string): void {
         Cookies.set(key,value)
+  }
+  
+  checkForCookie(key: string):boolean | string{
+    const cookie: string | undefined = Cookies.get(key);
+    if (cookie != undefined) {
+      return cookie;
     }
+    return false;
+  }
 }

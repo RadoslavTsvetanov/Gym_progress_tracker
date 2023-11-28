@@ -2,14 +2,25 @@ import Head from "next/head";
 import Link from "next/link";
 import { CookieHandler } from "~/utils/cookie_handler";
 import { api } from "~/utils/api";
-import { useEffect,useState } from "react"
+import { useEffect, useState } from "react"
 import Cookies from "js-cookie"
+import {User} from "~/utils/types"
 export default function Home() {
-  const [username,set_username] = useState("")
+  const [user,set_user] = useState()
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
   const cookie_handler = new CookieHandler;
   useEffect(() => {
-      set_username(JSON.parse(Cookies.get('user')))
+    const cookie: string | boolean = cookie_handler.checkForCookie('user') 
+    if (!cookie) {
+      window.location.href = '/login';
+      return;
+    }
+    const user:User = JSON.parse(cookie) 
+      set_user(user)
+
+    //---------------------
+
+    
   }, [])
   
   
@@ -22,7 +33,7 @@ export default function Home() {
       </Head>
       
       <main>
-        <h1>HI { username.username}</h1>
+        {user ? <h1>HI { user.username}</h1> : <div>Loading data</div>}
       </main>
     </>
   );
