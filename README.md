@@ -22,6 +22,7 @@ Technologies and techniques used
       Prisma > for handling complex queries and sql structure
       Nest > and a bit of for cleaning up and redoing the code later
       Python > since i am developing on windows but the containers are run on linux(alpine) I ran into problems with prisma during the build of containers in docker-compose due to the exclusion of the docker ignore i made my own ali express docker compose in py
+      tRPC > for ease of use of the api and react query - procedures provide very good experience to work with and for debugging (in my opinion due to the easy integration with react-query). It may cause a bit more performance and speed demand but if i wanted to optimize this things to the fullest i would have used C. It is a totta;y optional part since i can make the requests directly but tRPC speeds up the process of debugging and viewing data and errors during debugging
 
     Techniques:
         Microservices: Adopted to improve scalability and manage different functionalities independently.
