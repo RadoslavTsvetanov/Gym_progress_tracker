@@ -60,7 +60,7 @@ export const postRouter = createTRPCRouter({
         console.log("data--------------------------------")
         console.log(data)
         return {
-          greeting: data 
+          data 
         };
       } catch (error) {
         console.log(error);
