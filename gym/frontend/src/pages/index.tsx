@@ -5,9 +5,44 @@ import { api } from "~/utils/api";
 import { useEffect, useState } from "react"
 import Cookies from "js-cookie"
 import {User} from "~/utils/types"
+import {application_url} from "./constant_variables/constants"
+interface ExercisesProps {
+  has_program: boolean;
+}
+
+interface Program{
+  data:object
+}
+
+function Exercises({ has_program }: ExercisesProps) {
+  return (
+    <div>
+      {has_program ? (
+        <>
+          {/* Add your content here for when has_program is true */}
+          hi
+        </>
+      ) : (
+        <>
+          <div>
+            {/* Add your content here for when has_program is false */}
+            <Link href={`${application_url}/add_program`}>create program</Link>
+            no program
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+
+
+
+
+
 export default function Home() {
-  const [user,set_user] = useState()
-  const hello = api.post.hello.useQuery({ text: "from tRPC" });
+  const [user, set_user] = useState()
+  const program:Program = api.post.get_exercises.useQuery(user ? { username: user.username,token:user.token } : {username:""}) 
   const cookie_handler = new CookieHandler;
   useEffect(() => {
     const cookie: string | boolean = cookie_handler.checkForCookie('user') 
@@ -15,12 +50,12 @@ export default function Home() {
       window.location.href = '/login';
       return;
     }
-    const user:User = JSON.parse(cookie) 
-      set_user(user)
+    const user: User = typeof (cookie) === 'string' ? JSON.parse(cookie) : undefined; 
+    set_user(user)
 
     //---------------------
+    console.log(program)
 
-    
   }, [])
   
   
@@ -34,6 +69,7 @@ export default function Home() {
       
       <main>
         {user ? <h1>HI { user.username}</h1> : <div>Loading data</div>}
+        <Exercises has_program={program.data ?(program.data.error ? false : true): false } />
       </main>
     </>
   );
