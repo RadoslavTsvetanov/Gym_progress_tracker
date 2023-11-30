@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import {User} from "./types"
 import Cookies from 'js-cookie';
 
 interface Cookie {
@@ -33,4 +34,18 @@ export class CookieHandler {
     }
     return false;
   }
+
+  parseCookieToUser(cookie: string): User | undefined{
+      try {
+    const user: User = JSON.parse(cookie);
+    return user;
+  } catch (error) {
+    return undefined;
+  }
+  }
+  redirectToLoginIfNoCookie(cookie: string | boolean): void {
+  if (!cookie) {
+    window.location.href = '/login';
+  }
+};
 }

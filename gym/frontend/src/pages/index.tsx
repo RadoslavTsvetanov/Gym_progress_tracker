@@ -13,11 +13,31 @@ interface ExercisesProps {
   program: object | undefined;
 }
 
-interface Program {
+interface Program_query{
   data: object;
 }
 
-const renderExercises = (program) => {
+interface Exercise {
+  id: number;
+  name: string;
+  sets: number;
+  reps: number;
+}
+
+interface Workout {
+  id: number;
+  type: string;
+  programId: number;
+  exercises: Exercise[];
+}
+
+interface Program {
+  program: {
+    workouts: Workout[];
+  };
+}
+
+const renderExercises = (program : Program) => {
   return (
     <div className="mt-8 grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
       {program.program.workouts.map((workout) => (
@@ -63,16 +83,16 @@ function Exercises({ has_program, program }: ExercisesProps) {
 
 export default function Home() {
   const [user, set_user] = useState<User | undefined>()
-  const program: Program = api.post.get_exercises.useQuery(user ? { username: user.username, token: user.token } : { username: "" })
+  const program: Program_query = api.post.get_exercises.useQuery(user ? { username: user.username, token: user.token } : { username: "" })
   const cookie_handler = new CookieHandler;
   useEffect(() => {
-    const cookie: string | boolean = cookie_handler.checkForCookie('user')
-    if (!cookie) {
-      window.location.href = '/login';
-      return;
-    }
-    const user: User = typeof (cookie) === 'string' ? JSON.parse(cookie) : undefined;
+    const cookie: string | boolean = cookie_handler.checkForCookie('user');
+  cookie_handler.redirectToLoginIfNoCookie(cookie);
+
+  if (typeof cookie === 'string') {
+    const user: User | undefined = cookie_handler.parseCookieToUser(cookie);
     set_user(user);
+  }
   }, [])
 
   return (
