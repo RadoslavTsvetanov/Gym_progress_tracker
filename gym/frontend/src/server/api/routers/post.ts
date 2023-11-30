@@ -7,19 +7,23 @@ interface Result{
   data:object
 }
 
-
+interface Headers{
+  authorization:string
+}
 
 
 enum REQUEST_TYPE{
   POST = 'POST',
   GET = 'GET'
 }
-async function axios_request(url:string, req_data:object, method:REQUEST_TYPE, headers:object) {
+
+//! Teacher told me these are called factories so should rename later
+async function axios_request(url:string, req_data:object, method:REQUEST_TYPE, headers:Headers) {
   try {
     const response = await axios({
       method: method,
       url: url,
-      data: req_data,
+    data: req_data,
       headers: headers,
     });
 
@@ -85,4 +89,23 @@ export const postRouter = createTRPCRouter({
         return {error:err};
 }
     }),
+
+  get_progression: publicProcedure
+    .input(z.object({ username: z.string(), token: z.string() }))
+    .query(async ({ input }) => {
+     try{
+    
+      const res: Result = await axios_query(`${gateway_url}/exercises/get_progression`, { username: input.username }, REQUEST_TYPE.GET, {
+        authorization: input.token
+      })
+       console.log(res)
+     const {data} = res
+     
+       return {
+         data
+       }
+     } catch (err) {
+        return err
+      }
+    })
 });
