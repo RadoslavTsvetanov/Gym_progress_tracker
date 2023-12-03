@@ -5,7 +5,7 @@ import { CookieHandler } from "~/utils/cookie_handler";
 import { api } from "~/utils/api";
 import { useEffect, useState } from "react"
 import Cookies from "js-cookie"
-import { User } from "~/utils/types"
+import { User,Exercise, Workout, Program } from "~/utils/types"
 import { application_url } from "./constant_variables/constants"
 
 interface ExercisesProps {
@@ -17,25 +17,7 @@ interface Program_query{
   data: object;
 }
 
-interface Exercise {
-  id: number;
-  name: string;
-  sets: number;
-  reps: number;
-}
 
-interface Workout {
-  id: number;
-  type: string;
-  programId: number;
-  exercises: Exercise[];
-}
-
-interface Program {
-  program: {
-    workouts: Workout[];
-  };
-}
 
 const renderExercises = (program : Program) => {
   return (
@@ -113,7 +95,11 @@ export default function Home() {
 
         <Exercises has_program={isProgramAvailable} program={programData} />
 
-
+        <div>
+          <Link href={`${application_url}/new_workout`} className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+            Enter new workout
+          </Link>
+          </div>
         <div>
           <p>your workouts best</p>
         </div>
