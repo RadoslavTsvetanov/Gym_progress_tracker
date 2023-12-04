@@ -66,7 +66,7 @@ export default function Home() {
   const [user, set_user] = useState<User | undefined>();
   const program: Program_query = api.post.get_exercises.useQuery(user ? { username: user.username, token: user.token } : { username: "" });
   const cookie_handler = new CookieHandler();
-  const Workouts = api.post.get_progression.useQuery(user != undefined ? { username: user.username, token: user.token } : { username: "", token: "" });
+  const progression = api.post.get_progression.useQuery(user != undefined ? { username: user.username, token: user.token } : { username: "", token: "" });
   useEffect(() => {
     const cookie: string | boolean = cookie_handler.checkForCookie('user');
     cookie_handler.redirectToLoginIfNoCookie(cookie);
@@ -92,17 +92,19 @@ export default function Home() {
         ) : (
           <div>Loading user data...</div>
         )}
-
-        <Exercises has_program={isProgramAvailable} program={programData} />
-
+        {
+          <>
         <div>
+          <Exercises has_program={isProgramAvailable} program={programData} />
           <Link href={`${application_url}/new_workout`} className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
             Enter new workout
           </Link>
-          </div>
+        </div>
         <div>
           <p>your workouts best</p>
-        </div>
+            </div>
+          </>
+        }
       </main>
     </>
   );

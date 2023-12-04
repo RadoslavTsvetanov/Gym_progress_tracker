@@ -1,6 +1,6 @@
 import { object, z } from "zod";
 import axios from "axios"
-import {gateway_url} from "~/pages/constant_variables/constants"
+import {application_url, gateway_url} from "~/pages/constant_variables/constants"
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 interface Result{
@@ -61,8 +61,6 @@ export const postRouter = createTRPCRouter({
           authorization:input.token
         });
         const { data } = response;
-        console.log("data--------------------------------")
-        console.log(data)
         return {
           data 
         };
@@ -107,5 +105,23 @@ export const postRouter = createTRPCRouter({
      } catch (err) {
         return err
       }
+    }),
+  
+
+    add_workout: publicProcedure
+    .input(z.object({username:z.string(),token: z.string(),workout:z.unknown()}))
+      .mutation(async ({ input }) => {
+        try {
+          const res: Result = await axios_request(`${gateway_url}/exercises/add_new_workout`, { username: input.username, workout: input.workout }, REQUEST_TYPE.POST, { authorization: input.token })
+          const { data } = res;
+          return { 
+            data
+          }
+         } catch (err) {
+          console.log(err)
+          return {
+            status: 401,
+            err
+        }}
     })
 });
