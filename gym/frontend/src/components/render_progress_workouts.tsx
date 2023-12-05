@@ -5,7 +5,7 @@ interface PreviousWorkoutComponentProps {
 }
 
 const PreviousWorkout = (workout: PreviousWorkoutComponentProps) => {
-  const workouts_of_type = workout.exercises.progression[0].workouts.filter(Workout => Workout.type === workout.type)
+  const workouts_of_type = ((workout.type != undefined && workout.type != "") ? (workout.exercises.progression[0].workouts.filter(Workout => Workout.type === workout.type)) : (workout.exercises.progression[0].workouts))
   return (
     <div className="bg-gray-200 p-4 mb-4">
       <h1>__</h1>
