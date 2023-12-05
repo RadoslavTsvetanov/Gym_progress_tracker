@@ -14,13 +14,13 @@ app.get("/", (req, res) => {
   res.json();
 });
 
-app.post("/exercises/create_exercises", async (req, res) => {
-  const { username, workouts } = req.body;
+app.post("/exercises/add_program", async (req, res) => {
+  const { username, program } = req.body;
   try {
-    const createdExercises = await db.create_user_exercises(workouts, username);
+    const new_program = await db.add_program_to_user(username, program);
     res.json({
       success: "Exercises created successfully",
-      createdExercises,
+      new_program,
     });
   } catch (error) {
     res.status(500).json({ error: "Error creating exercises" });

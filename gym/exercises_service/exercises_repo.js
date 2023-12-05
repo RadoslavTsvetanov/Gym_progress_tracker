@@ -3,7 +3,80 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 class DB {
-  async create_user_exercises(workouts, username) {}
+  async add_program_to_user(user_name, programJSON) {
+    try {
+      if (!programJSON) {
+        throw new Error(
+          "Program JSON is required to add a program to the user."
+        );
+      }
+
+      const user = await prisma.user.findUnique({
+        where: {
+          username: user_name,
+        },
+        include: {
+          program: {
+            include: {
+              workouts: {
+                include: {
+                  exercises: true,
+                },
+              },
+            },
+          },
+          progress: true,
+        },
+      });
+
+      if (!user) {
+        throw new Error("User not found.");
+      }
+
+      const updatedUser = await prisma.user.update({
+        where: {
+          username: user_name,
+        },
+        data: {
+          program: {
+            create: {
+              title: programJSON.title,
+              workouts: {
+                create: programJSON.workouts.map((workout) => ({
+                  type: workout.type,
+                  exercises: {
+                    create: workout.exercises.map((exercise) => ({
+                      name: exercise.name,
+                      reps: exercise.reps,
+                      sets: exercise.sets,
+                    })),
+                  },
+                })),
+              },
+            },
+          },
+        },
+        include: {
+          program: {
+            include: {
+              workouts: {
+                include: {
+                  exercises: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      console.log("Program added to the user:", updatedUser);
+      return updatedUser;
+    } catch (error) {
+      console.error("Error adding program to user:", error);
+      throw error;
+    }
+  }
+
   async get_user_exercises(username) {
     try {
       const userWithExercises = await prisma.user.findUnique({
@@ -91,51 +164,70 @@ class DB {
 
   async create_user(username, programJSON) {
     try {
-      const newUser = await prisma.user.create({
-        data: {
-          username,
-          program: {
-            create: {
-              title: programJSON.title,
-              workouts: {
-                create: programJSON.workouts.map((workout) => ({
-                  type: workout.type,
-                  exercises: {
-                    create: workout.exercises.map((exercise) => ({
-                      name: exercise.name,
-                      reps: exercise.reps,
-                      sets: exercise.sets,
-                    })),
-                  },
-                })),
-              },
-            },
-          },
-          progress: {
-            create: {
-              workouts: [], // Progress can be added separately as needed
-            },
-          },
-        },
-        include: {
-          program: {
-            include: {
-              workouts: {
-                include: {
-                  exercises: true,
+      if (programJSON) {
+        const newUser = await prisma.user.create({
+          data: {
+            username,
+            program: {
+              create: {
+                title: programJSON.title,
+                workouts: {
+                  create: programJSON.workouts.map((workout) => ({
+                    type: workout.type,
+                    exercises: {
+                      create: workout.exercises.map((exercise) => ({
+                        name: exercise.name,
+                        reps: exercise.reps,
+                        sets: exercise.sets,
+                      })),
+                    },
+                  })),
                 },
               },
             },
+            progress: {
+              create: {
+                workouts: [], // Progress can be added separately as needed
+              },
+            },
           },
-          progress: true,
-        },
-      });
+          include: {
+            program: {
+              include: {
+                workouts: {
+                  include: {
+                    exercises: true,
+                  },
+                },
+              },
+            },
+            progress: true,
+          },
+        });
 
-      console.log(
-        "New user created with custom program and progress:",
-        newUser
-      );
-      return newUser;
+        console.log(
+          "New user created with custom program and progress:",
+          newUser
+        );
+        return newUser;
+      } else {
+        const newUser = await prisma.user.create({
+          data: {
+            username,
+            progress: {
+              create: {
+                workouts: [], // Progress can be added separately as needed
+              },
+            },
+          },
+          include: {
+            progress: true,
+          },
+        });
+
+        console.log("New user created without a custom program:", newUser);
+        return newUser;
+      }
     } catch (error) {
       console.error("Error creating user:", error);
       throw error;
