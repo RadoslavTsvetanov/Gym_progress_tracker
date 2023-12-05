@@ -7,7 +7,10 @@ import { Helper_functions } from '~/utils/helper_functions';
 interface FormData {
   
 }
-
+interface Progressed_exercise{
+  que: string[],
+  sets: string[];
+}
 interface PreviousWorkoutComponentProps {
   type: string;
   exercises: object;
@@ -22,7 +25,7 @@ function PreviousWorkout(workout: PreviousWorkoutComponentProps) {
       {workouts_of_type.map((exerciseGroup, index) => (
         <div key={index} className="mb-4">
           <h3>{exerciseGroup.type}</h3>
-          {exerciseGroup.exercises.map((exercise, idx) => (
+          {exerciseGroup.exercises.map((exercise : Progressed_exercise, idx) => (
             <div key={idx} className="mb-2">
               <h4>{exercise.name}</h4>
               <p>Sets: {exercise.sets.join(", ")}</p>
@@ -38,7 +41,7 @@ function PreviousWorkout(workout: PreviousWorkoutComponentProps) {
 function RenderWorkoutExercisesBasedOnType(type: string, workouts: Workout[], handleChange: void) {
   const selectedWorkout = workouts.find((workout) => workout.type === type);
 
-  function renderExerciseInputs(exercise: Exercise) {
+  function renderExerciseInputs(exercise) {
     const setInputs = [];
 
     for (let setIndex = 1; setIndex <= exercise.sets; setIndex++) {

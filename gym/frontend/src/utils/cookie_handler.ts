@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {User} from "./types"
 import Cookies from 'js-cookie';
-
+type raw_cookie = string | boolean
 interface Cookie {
   token: string;
   username: string;
@@ -46,6 +46,14 @@ export class CookieHandler {
   redirectToLoginIfNoCookie(cookie: string | boolean): void {
   if (!cookie) {
     window.location.href = '/login';
+    return undefined;
+    }
   }
-};
+  
+  extract_cookie(name:string){
+    const cookie_string: raw_cookie = this.checkForCookie(name);
+    this.redirectToLoginIfNoCookie(cookie_string);
+    const cookie: User | undefined = typeof (cookie_string) =='string' ? (this.parseCookieToUser(cookie_string)) : undefined;
+    return cookie;
+  }
 }

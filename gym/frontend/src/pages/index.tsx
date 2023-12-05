@@ -68,13 +68,7 @@ export default function Home() {
   const cookie_handler = new CookieHandler();
   const progression = api.post.get_progression.useQuery(user != undefined ? { username: user.username, token: user.token } : { username: "", token: "" });
   useEffect(() => {
-    const cookie: string | boolean = cookie_handler.checkForCookie('user');
-    cookie_handler.redirectToLoginIfNoCookie(cookie);
-
-    if (typeof cookie === 'string') {
-      const currentUser: User | undefined = cookie_handler.parseCookieToUser(cookie);
-      set_user(currentUser);
-    }
+    set_user(cookie_handler.extract_cookie('user'))
   }, []);
 
   const isProgramAvailable = !!program.data && !program.data.error;

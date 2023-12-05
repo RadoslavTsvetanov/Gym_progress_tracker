@@ -49,6 +49,12 @@ class Helper_functions {
     }
     return this.convert_to_arr(new_data);
   }
+
+  find_best_workout(arr) {
+    for (let i = 0; i < arr.length; i++) {
+      
+    }
+  }
 }
 
 export { Helper_functions };
