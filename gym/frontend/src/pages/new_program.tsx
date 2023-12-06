@@ -1,13 +1,16 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-
+import { api } from '~/utils/api';
+import { CookieHandler } from '~/utils/cookie_handler';
+import { User } from '~/utils/types';
 export default function Workout() {
-  const [user, setUser] = useState('');
-  const [form_data, setFormData] = useState({});
+  const [user, set_user] = useState<User | undefined>();
   const [workoutDays, setWorkoutDays] = useState([]);
-
+  const send_program = api.post.create_program.useMutation()
+  
   useEffect(() => {
-    // Code to set user from cookie handler
+    const cookie_handler = new CookieHandler;
+    set_user(cookie_handler.extract_cookie('user'))
   }, []);
 
   const handleDayNameChange = (event, index) => {
@@ -52,10 +55,12 @@ export default function Workout() {
     event.preventDefault();
     console.log(workoutDays);
     // Logic to submit workout routine data
+    send_program.mutate((user != undefined && user.username != undefined) ? {username:user.username,token:user.token,program:{}} : {username:"",token:""}) // for the ts compiler to calm down
   };
 
   return (
     <div className="font-sans max-w-screen-md mx-auto">
+      {send_program.isLoading ? <div className="fixed top-0 left-0 p-4 bg-white shadow-md w-[80vw] h-[80vh]"></div> : <></>}
       <h1 className="text-center text-3xl font-bold mb-8">Workout Planner</h1>
       {user !== undefined ? (
         <form onSubmit={handleSubmit} className="bg-gray-100 p-6 rounded-lg shadow-md">
@@ -89,17 +94,17 @@ export default function Workout() {
                       />
                     </div>
                   ))}
-                  <button onClick={() => addSet(dayIndex, exerciseIndex)} className="bg-gray-300 px-3 py-1 text-sm rounded-md">Add Set</button>
+                  <button onClick={() => addSet(dayIndex, exerciseIndex)} className="bg-gray-300 px-3 py-1 text-sm rounded-md" type="button">Add Set</button>
                 </div>
               ))}
-              <button onClick={() => addExercise(dayIndex)} className="bg-blue-500 text-white px-4 py-2 rounded-md">Add Exercise</button>
+              <button onClick={() => addExercise(dayIndex)} className="bg-blue-500 text-white px-4 py-2 rounded-md" type="button">Add Exercise</button>
             </div>
           ))}
           {workoutDays.length === 0 && (
             <div className="text-center mt-4">No workout planned yet.</div>
           )}
           <div className="flex justify-center mt-4">
-            <button onClick={addDay} className="bg-green-500 text-white px-4 py-2 mr-2 rounded-md">Add Day</button>
+            <button onClick={addDay} className="bg-green-500 text-white px-4 py-2 mr-2 rounded-md" type="button">Add Day</button>
             <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">Submit</button>
           </div>
         </form>

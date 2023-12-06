@@ -64,7 +64,9 @@ function Exercises({ has_program, program }: ExercisesProps) {
 }
 export default function Home() {
   const [user, set_user] = useState<User | undefined>();
-  const program: Program_query = api.post.get_exercises.useQuery(user ? { username: user.username, token: user.token } : { username: "" });
+  const program: Program_query = api.post.get_exercises.useQuery(user ? { username: user.username, token: user.token } : { username: "" },{
+    enabled:(user != undefined && user.username != undefined)
+  });
   const cookie_handler = new CookieHandler();
   const progression = api.post.get_progression.useQuery(user != undefined ? { username: user.username, token: user.token } : { username: "", token: "" });
   useEffect(() => {
