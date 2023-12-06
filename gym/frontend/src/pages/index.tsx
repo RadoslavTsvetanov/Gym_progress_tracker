@@ -54,7 +54,7 @@ function Exercises({ has_program, program }: ExercisesProps) {
       ) : (
         <div className="text-center">
           <p className="text-2xl font-semibold mb-4 text-white">No Program Available</p>
-          <Link href={`${application_url}/add_program`} className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+          <Link href={`${application_url}/new_program`} className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
             Create Program
           </Link>
         </div>

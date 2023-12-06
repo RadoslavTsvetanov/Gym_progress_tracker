@@ -31,7 +31,6 @@ function RenderWorkoutExercisesBasedOnType(type: string, workouts: Workout[], ha
             id={inputId}
             name={inputId}
             className="border rounded p-2 w-full"
-            // Add value and onChange if you want to manage input state
             onChange={handleChange}
               />
               <input
@@ -118,7 +117,7 @@ export default function Workout() {
             <select
               onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                 set_selected_workout(event.target.value);
-                //!clear form content so that data from the old input is clear
+                //! clear form content so that data from the old input is clear
                 setFormContent({});
               }}
               className="border rounded p-2 mr-2"
