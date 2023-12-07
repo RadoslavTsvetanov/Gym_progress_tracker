@@ -3,7 +3,39 @@ import React, { useState, useEffect } from 'react';
 import { api } from '~/utils/api';
 import { CookieHandler } from '~/utils/cookie_handler';
 import { User } from '~/utils/types';
+interface Exercise {
+  name: string;
+  sets: string[];
+}
+
+interface unformatted_data {
+  program_name: string;
+  exercises: Exercise[];
+}
+function format_program_data(data:unformatted_data){
+  const exercises = data.exercises.map((program) => {
+    return {
+      type: program.name,
+      exercises: program.exercises.map((exercise) => {
+        return {
+          name: exercise.name,
+          reps: exercise.sets.length, // Assuming 'sets' represents the number of reps
+          sets: exercise.sets.length, // Assuming 'sets' represents the number of sets
+        };
+      }),
+    };
+  });
+
+  return {
+    program: {
+      title: data.program_name,
+      workouts: exercises,
+    },
+  };
+}
+
 export default function Workout() {
+  const [program_name,set_program_name] = useState<string>('')
   const [user, set_user] = useState<User | undefined>();
   const [workoutDays, setWorkoutDays] = useState([]);
   const send_program = api.post.create_program.useMutation()
@@ -12,7 +44,10 @@ export default function Workout() {
     const cookie_handler = new CookieHandler;
     set_user(cookie_handler.extract_cookie('user'))
   }, []);
-
+  const handleNameChange = (event) => {
+    // Updating the state with the new value from the input
+    set_program_name(event.target.value);
+  };
   const handleDayNameChange = (event, index) => {
     const newDays = [...workoutDays];
     newDays[index] = { ...newDays[index], name: event.target.value };
@@ -54,16 +89,28 @@ export default function Workout() {
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log(workoutDays);
+    const new_program = format_program_data({
+      program_name:program_name,
+      exercises:workoutDays
+    })
+    console.log("new program",new_program)
     // Logic to submit workout routine data
-    send_program.mutate((user != undefined && user.username != undefined) ? {username:user.username,token:user.token,program:{}} : {username:"",token:""}) // for the ts compiler to calm down
+    send_program.mutate((user != undefined && user.username != undefined) ? {username:user.username,token:user.token,program:new_program} : {username:"",token:""}) // for the ts compiler to calm down
   };
-
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Prevent form submission on Enter key press
+    }
+  };
   return (
     <div className="font-sans max-w-screen-md mx-auto">
       {send_program.isLoading ? <div className="fixed top-0 left-0 p-4 bg-white shadow-md w-[80vw] h-[80vh]"></div> : <></>}
       <h1 className="text-center text-3xl font-bold mb-8">Workout Planner</h1>
       {user !== undefined ? (
-        <form onSubmit={handleSubmit} className="bg-gray-100 p-6 rounded-lg shadow-md">
+
+        <form onSubmit={handleSubmit} className="bg-gray-100 p-6 rounded-lg shadow-md" onKeyDown={handleKeyPress}>
+          <p>Program name</p>
+          <input name="name" onChange={handleNameChange}/>
           {workoutDays.map((day, dayIndex) => (
             <div key={dayIndex} className="border border-gray-300 rounded-lg p-4 mb-4">
               <h2 className="text-xl font-semibold mb-4">Day {dayIndex + 1}</h2>

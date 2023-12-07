@@ -4,6 +4,10 @@ import { CookieHandler } from '~/utils/cookie_handler';
 import { User, Workout, ExercisesData } from '~/utils/types';
 import { Helper_functions } from '~/utils/helper_functions';
 import { PreviousWorkout } from '~/components/render_progress_workouts';
+
+
+
+
 interface FormData {
   
 }

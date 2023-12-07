@@ -20,6 +20,7 @@ enum REQUEST_TYPE{
 //! Teacher told me these are called factories so should rename later
 async function axios_request(url:string, req_data:object, method:REQUEST_TYPE, headers:Headers) {
   try {
+    console.log("sefe mi se",req_data)
     const response = await axios({
       method: method,
       url: url,
@@ -76,7 +77,8 @@ export const postRouter = createTRPCRouter({
     .input(z.object({ username: z.string().min(1),program: z.unknown(),token:z.string() }))
     .mutation(async ({ input }) => {
       try {
-        const res: Result = await axios_request(`${gateway_url}/exercises/create_user`, { username: input.username, program: input.program }, REQUEST_TYPE.POST, {
+        console.log(input.program)
+        const res: Result = await axios_request(`${gateway_url}/exercises/create_user`, { username: input.username, program: input.program.program }, REQUEST_TYPE.POST, {
           authorization:input.token
         });
         const { data } = res;
