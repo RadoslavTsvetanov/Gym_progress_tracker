@@ -1,5 +1,5 @@
 "use client"
-
+import Link from "next/link";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { gateway_url,application_url } from './constant_variables/constants';
@@ -87,7 +87,13 @@ const Signup = () => {
           >
             {isLoading ? 'Signing up...' : 'Sign Up'}
           </button>
-          {error && <div className="text-red-500">{error}</div>}
+          <div>
+            <p>already have an account?</p>
+          <Link href={`${application_url}/login`} className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+            Login
+          </Link>
+            {error && <div className="text-red-500">{error}</div>}
+            </div>
         </form>
       </div>
     </div>

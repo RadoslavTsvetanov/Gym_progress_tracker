@@ -1,9 +1,11 @@
 import React from 'react';
 import axios from 'axios';
-import { gateway_url } from './constant_variables/constants';
+import Link from "next/link"
+import { gateway_url,application_url } from './constant_variables/constants';
 import { CookieHandler } from '~/utils/cookie_handler';
 import Cookies from 'js-cookie';
-import {User} from "~/utils/types"
+import { User } from "~/utils/types"
+
 interface LoginResponse {
   token: string;
 }
@@ -84,6 +86,12 @@ const Login: React.FC = () => {
           >
             Log In
           </button>
+          <div>
+            <p>New here?</p>
+          <Link href={`${application_url}/signup`} className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+            Sign up
+          </Link>
+            </div>
         </form>
       </div>
     </div>

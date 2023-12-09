@@ -5,21 +5,20 @@ import { CookieHandler } from "~/utils/cookie_handler";
 import { api } from "~/utils/api";
 import { useEffect, useState } from "react"
 import Cookies from "js-cookie"
-import { User,Exercise, Workout, Program } from "~/utils/types"
+import { User, Exercise, Workout, Program } from "~/utils/types"
 import { application_url } from "./constant_variables/constants"
+import { PreviousWorkout } from "~/components/render_progress_workouts";
 
 interface ExercisesProps {
   has_program: boolean;
   program: object | undefined;
 }
 
-interface Program_query{
+interface Program_query {
   data: object;
 }
 
-
-
-const renderExercises = (program : Program) => {
+const renderExercises = (program: Program) => {
   return (
     <div className="mt-8 grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
       {program.program.workouts.map((workout) => (
@@ -62,13 +61,16 @@ function Exercises({ has_program, program }: ExercisesProps) {
     </div>
   );
 }
+
 export default function Home() {
+  const renderedTypes = new Set();
   const [user, set_user] = useState<User | undefined>();
-  const program: Program_query = api.post.get_exercises.useQuery(user ? { username: user.username, token: user.token } : { username: "" },{
-    enabled:(user != undefined && user.username != undefined)
+  const program: Program_query = api.post.get_exercises.useQuery(user ? { username: user.username, token: user.token } : { username: "" }, {
+    enabled: (user != undefined && user.username != undefined)
   });
   const cookie_handler = new CookieHandler();
   const progression = api.post.get_progression.useQuery(user != undefined ? { username: user.username, token: user.token } : { username: "", token: "" });
+
   useEffect(() => {
     set_user(cookie_handler.extract_cookie('user'))
   }, []);
@@ -90,14 +92,32 @@ export default function Home() {
         )}
         {
           <>
-        <div>
-          <Exercises has_program={isProgramAvailable} program={programData} />
-          <Link href={`${application_url}/new_workout`} className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
-            Enter new workout
-          </Link>
-        </div>
-        <div>
-          <p>your workouts best</p>
+            <div>
+              <Exercises has_program={isProgramAvailable} program={programData} />
+              {(program.data != undefined) && <Link href={`${application_url}/new_workout`} className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+                Enter new workout
+              </Link>}
+            </div>
+            <div>
+              <p>your workouts best</p>
+              {(progression != undefined && progression.data && progression.data.data != undefined && progression.data.data.progression != undefined) &&
+                progression.data.data.progression[0].workouts
+                  .slice() // Create a copy to avoid modifying the original array
+                  .reverse() // Reverse the array
+                  .map((workout: Workout) => {
+                    if (!renderedTypes.has(workout.type)) {
+                      renderedTypes.add(workout.type);
+                      return (
+                        <PreviousWorkout
+                          key={workout.id}
+                          type={workout.type}
+                          exercises={progression.data.data}
+                        />
+                      );
+                    }
+                    return null; // If type has already been rendered, return null
+                  })
+              }
             </div>
           </>
         }
