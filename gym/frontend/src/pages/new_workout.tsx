@@ -4,7 +4,7 @@ import { CookieHandler } from '~/utils/cookie_handler';
 import { User, Workout, ExercisesData } from '~/utils/types';
 import { Helper_functions } from '~/utils/helper_functions';
 import { PreviousWorkout } from '~/components/render_progress_workouts';
-
+import Redirector from '~/components/succesful_redirector';
 
 
 
@@ -114,6 +114,7 @@ export default function Workout() {
 
   return (
     <div className="container mx-auto p-4">
+      {send_new_workout.isSuccess && Redirector("new workout created successfuly")}
       {send_new_workout.isLoading ? <div className="fixed top-0 left-0 p-4 bg-white shadow-md w-[80vw] h-[80vh]"> sending workout ...</div> : <></>}
       {current_user != undefined && (programData != undefined && programData.exercises != undefined) ? (
         <div>

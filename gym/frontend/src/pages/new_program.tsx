@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '~/utils/api';
 import { CookieHandler } from '~/utils/cookie_handler';
 import { User } from '~/utils/types';
+import Redirector from '~/components/succesful_redirector';
 interface Exercise {
   name: string;
   sets: string[];
@@ -104,6 +105,7 @@ export default function Workout() {
   };
   return (
     <div className="font-sans max-w-screen-md mx-auto">
+      {send_program.isSuccess && Redirector("/")}
       {send_program.isLoading ? <div className="fixed top-0 left-0 p-4 bg-white shadow-md w-[80vw] h-[80vh]"></div> : <></>}
       <h1 className="text-center text-3xl font-bold mb-8">Workout Planner</h1>
       {user !== undefined ? (

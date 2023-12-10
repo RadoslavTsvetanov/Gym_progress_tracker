@@ -43,9 +43,9 @@ export class CookieHandler {
     return undefined;
   }
   }
-  redirectToLoginIfNoCookie(cookie: string | boolean): void {
+  redirectToLoginIfNoCookie(cookie: string | boolean, path = "/login"): void {
   if (!cookie) {
-    window.location.href = '/login';
+    window.location.href = path;
     return undefined;
     }
   }
