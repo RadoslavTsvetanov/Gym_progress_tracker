@@ -136,7 +136,7 @@ export default function Workout() {
             </select>
             {RenderWorkoutExercisesBasedOnType(selectedWorkout, programData.exercises.program.workouts, handleChange)}
             <button type="submit" className="bg-blue-500 text-white rounded p-2 mt-2">
-              Submit
+              Submit!
             </button>
           </form>
           <div className="mb-4">{selectedWorkout}</div>
