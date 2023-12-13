@@ -2,7 +2,8 @@
 import Link from "next/link";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { gateway_url,application_url } from './constant_variables/constants';
+import { gateway_url, application_url } from './constant_variables/constants';
+import Loader from "~/components/loader"
 const Signup = () => {
 
   const router = useRouter()
@@ -85,6 +86,7 @@ const Signup = () => {
             disabled={isLoading}
             className="w-full bg-blue-500 text-white rounded-md py-2 px-4 hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
           >
+            {Loader(isLoading,"signing up ...")}
             {isLoading ? 'Signing up...' : 'Sign Up'}
           </button>
           <div>

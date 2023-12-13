@@ -5,16 +5,17 @@ import { gateway_url,application_url } from './constant_variables/constants';
 import { CookieHandler } from '~/utils/cookie_handler';
 import Cookies from 'js-cookie';
 import { User } from "~/utils/types"
-
+import Loader from "~/components/loader"
 interface LoginResponse {
   token: string;
 }
 
 const Login: React.FC = () => {
   const cookie_handler = new CookieHandler();
-
+  const [isLoading,setIsLoading] = React.useState<undefined | boolean>(undefined)
   const loginUser = async (data: { username: string; password: string }): Promise<LoginResponse> => {
     try {
+      setIsLoading(true)
       const response = await axios.post(`${gateway_url}/auth/login`, data, {
         headers: {
           'Content-Type': 'application/json',
@@ -43,6 +44,8 @@ const Login: React.FC = () => {
       Cookies.set("user", JSON.stringify({username:username,token:token}), {
         expires: 7,
       })
+      
+      setIsLoading(false)
       // If login successful, you can redirect the user
       window.location.href = '/'; // Redirect to dashboard on success
     } catch (error) {
@@ -53,6 +56,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      {isLoading != undefined && Loader(isLoading,"login in ...")}
       <div className="bg-white p-8 rounded shadow-md max-w-md w-full">
         <h2 className="text-2xl font-semibold mb-4 text-gray-800">Log In</h2>
         <form className="space-y-4" onSubmit={handleSubmit}>

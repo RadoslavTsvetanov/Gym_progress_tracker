@@ -127,6 +127,7 @@ export default function Workout() {
               }}
               className="border rounded p-2 mr-2"
             >
+              <option key={ 123424} value={""}> </option>
               {programData.exercises.program.workouts.map((workout: Workout) => (
                 <option key={workout.id} value={workout.type}>
                   {workout.type}
